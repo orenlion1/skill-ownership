@@ -24,6 +24,7 @@ import docs_contract  # noqa: E402
 import guardrails  # noqa: E402
 import root_contract  # noqa: E402
 import skill_validation  # noqa: E402
+import sync as sync_module  # noqa: E402
 import vendored_imports  # noqa: E402
 import versioning  # noqa: E402
 
@@ -166,6 +167,17 @@ def main(argv=None) -> int:
         'audit', help='read-only report: section classes, routing gaps, size and links')
     audit.add_argument('--repository', type=Path, default=Path.cwd())
     audit.add_argument('--format', choices=('markdown', 'json'), default='markdown')
+    sync = commands.add_parser(
+        'sync', help='report whether the carried copy is behind upstream; --apply updates it')
+    sync.add_argument('--repository', type=Path, default=Path.cwd())
+    sync.add_argument('--upstream', help='where to read releases from (URL or path); '
+                                         'defaults to the pin\'s upstream_repository')
+    sync.add_argument('--upstream-url', help='https URL to record in a new pin at first '
+                                             'adoption, when --upstream is not one')
+    sync.add_argument('--apply', action='store_true',
+                      help='replace the carried copy and update the pin together')
+    sync.add_argument('--to', help='release to apply (default: the latest)')
+    sync.add_argument('--format', choices=('text', 'json'), default='text')
     ratchet = commands.add_parser('ratchet', help='show or record the SKILL.md size baseline')
     ratchet.add_argument('--repository', type=Path, default=Path.cwd())
     ratchet.add_argument('--record', action='store_true',
@@ -188,12 +200,39 @@ def main(argv=None) -> int:
             print(json.dumps(report, indent=2) if args.format == 'json'
                   else audit_module.render_markdown(report), end='\n' if args.format == 'json' else '')
             return 0
+        if args.command == 'sync':
+            return run_sync(repository, args, parser)
         if args.command == 'ratchet':
             return run_ratchet(repository, args.record)
         return run_preserve(repository, args, parser)
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f'error: {args.command}: {error}', file=sys.stderr)
         return 1
+
+
+def run_sync(repository: Path, args, parser) -> int:
+    if not args.apply:
+        if args.to or args.upstream_url:
+            parser.error('--to and --upstream-url apply only with --apply')
+        result = sync_module.report(repository, args.upstream)
+        print(json.dumps(result, indent=2) if args.format == 'json'
+              else sync_module.render(result), end='\n' if args.format == 'json' else '')
+        return sync_module.exit_code(result)
+    result = sync_module.apply(repository, args.upstream, args.to, args.upstream_url)
+    if args.format == 'json':
+        print(json.dumps(result, indent=2))
+        return 0
+    if not result['changed']:
+        print(f'sync: already at {result["to"]}; nothing changed')
+        return 0
+    print(f'sync: {result["from"] or "no copy"} -> {result["to"]}; '
+          f'{len(result["changed"])} file(s) changed, pin updated')
+    for name in result['changed']:
+        print(f'  {name}')
+    for name in result['preserved']:
+        print(f'  preserved local adaptation: {name}')
+    print('Review the working tree and deliver it through this repository\'s normal path.')
+    return 0
 
 
 def run_ratchet(repository: Path, record: bool) -> int:
