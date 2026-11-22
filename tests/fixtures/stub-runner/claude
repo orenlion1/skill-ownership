@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""Deterministic stand-in for the headless model CLI, for testing execution mode only.
+
+It never contacts a model. As executor it emits a minimal stream-json transcript; as
+grader it answers every numbered expectation with the verdict in STUB_VERDICT
+(pass by default, fail when set to "fail").
+"""
+import json
+import os
+import re
+import sys
+
+prompt = sys.stdin.read()
+if '--output-format' in sys.argv:
+    print(json.dumps({'type': 'system', 'subtype': 'init', 'model': 'stub-runner'}))
+    print(json.dumps({'type': 'result', 'subtype': 'success', 'result': 'stub transcript'}))
+    sys.exit(0)
+block = prompt.split('Expectations:\n', 1)[1].split('\n\n', 1)[0]
+texts = [re.sub(r'^\d+\.\s*', '', line) for line in block.splitlines() if line.strip()]
+passed = os.environ.get('STUB_VERDICT', 'pass') != 'fail'
+count = len(texts)
+print(json.dumps({
+    'expectations': [{'id': i, 'text': text, 'passed': passed, 'evidence': 'stub verdict'}
+                     for i, text in enumerate(texts, 1)],
+    'summary': {'passed': count if passed else 0, 'failed': 0 if passed else count,
+                'total': count, 'pass_rate': 1.0 if passed else 0.0}}))
