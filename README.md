@@ -40,6 +40,12 @@ bash scripts/check.sh              # release metadata, tests, root-file identity
 bash scripts/check-disclosure.sh   # secret and institutional-data scans; run before any push
 ```
 
+## Releases
+
+Ask the coding agent to `run release-it`. [VERSIONING.md](VERSIONING.md) is the release
+contract: one `VERSION`, a protected pull request, one annotated tag, exact-SHA CI, and a
+curated GitHub Release.
+
 ## License
 
 [MIT](LICENSE).

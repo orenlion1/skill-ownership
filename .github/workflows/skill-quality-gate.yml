@@ -36,3 +36,20 @@ jobs:
 
       - name: Exercise the gate, including stubbed model execution
         run: bash scripts/test-quality-gate.sh
+
+      - name: Evaluate this repository's own catalog
+        run: |
+          set -o pipefail
+          results="$RUNNER_TEMP/skill-quality-results"
+          mkdir -p "$results"
+          skills/skill-ownership/scripts/run-skill-quality-gate.sh --repository . \
+            --output-dir "$results" 2>&1 | tee "$results/runner.log"
+
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: skill-quality-gate-${{ github.run_id }}
+          path: ${{ runner.temp }}/skill-quality-results
+          if-no-files-found: warn
+          retention-days: 7
