@@ -30,9 +30,9 @@ The limit holds.
 
 Keep both files identical.
 """
-CARRIED = ('---\nname: skill-ownership\ndescription: "Audits. Use when auditing."\n'
+CARRIED = ('---\nname: skill-ownership\ndescription: "Audits a repository against the principle. Use when auditing."\n'
            'metadata:\n  version: "0.1.0"\n---\n')
-SKILL = '---\nname: alpha\ndescription: "Does alpha work. Use when alpha is requested."\n---\n\n# Alpha\n'
+SKILL = '---\nname: alpha\ndescription: "Does alpha work for a repository. Use when alpha is requested."\n---\n\n# Alpha\n'
 
 
 class DispatcherFixture(unittest.TestCase):
@@ -115,7 +115,7 @@ class DispatcherFixture(unittest.TestCase):
         imported = self.root / 'skills/imported'
         imported.mkdir()
         (imported / 'SKILL.md').write_text(
-            '---\nname: imported\ndescription: "Imports. Use when importing."\n'
+            '---\nname: imported\ndescription: "Imports upstream material into a repository. Use when importing."\n'
             'metadata:\n  version: "1.2.3"\n---\n', encoding='utf-8')
         routed = ROOT_TEXT.replace('## Policy', '| Imp | [Imp](skills/imported/SKILL.md) |\n\n## Policy')
         for name in ('AGENTS.md', 'CLAUDE.md'):
@@ -161,6 +161,58 @@ class DispatcherFixture(unittest.TestCase):
         (self.root / 'VERSION').write_text('0.2.0\n')
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
             self.assertEqual(ownership.run_checks(self.root, ownership.UPSTREAM_CHECKS), 1)
+
+
+    def test_guardrails_run_in_check_and_ratchet_is_optional_until_recorded(self):
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 0, err)
+        self.assertIn('size-ratchet: not configured', out)
+        for name in ('duplication', 'links', 'description-shape'):
+            self.assertIn(f'{name}: ', out)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(
+                ownership.main(['ratchet', '--repository', str(self.root), '--record']), 0)
+        code, out, err = self.run_checks()
+        self.assertIn('size-ratchet: no SKILL.md grew past its recorded baseline — PASSED', out)
+        skill = self.root / 'skills/alpha/SKILL.md'
+        skill.write_text(skill.read_text() + '\nAnother always-loaded paragraph.\n')
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 1)
+        self.assertIn('size-ratchet: FAILED', out)
+
+    def test_dead_link_and_bad_description_fail_the_run(self):
+        skill = self.root / 'skills/alpha/SKILL.md'
+        skill.write_text(SKILL.replace('"Does alpha work for a repository. Use when alpha is requested."',
+                                       'Does alpha work') + '\n[gone](references/none.md)\n')
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 1)
+        self.assertIn('links: FAILED', out)
+        self.assertIn('description-shape: FAILED', out)
+
+    def test_delegation_sentinel_required_in_several_files_is_not_duplication(self):
+        sentinel = ('Delegating skills in this catalog share one delegation contract: copying '
+                    'any of them means copying the owner package too.')
+        skill = self.root / 'skills/alpha/SKILL.md'
+        skill.write_text(skill.read_text() + f'\n{sentinel}\n')
+        (self.root / 'skills/alpha/references').mkdir()
+        (self.root / 'skills/alpha/references/contract.md').write_text(f'# Contract\n\n{sentinel}\n')
+        errors, _ = ownership.check_duplication(self.root)
+        self.assertEqual(len(errors), 1)
+        (self.root / 'policy/delegation-contract.json').write_text(
+            json.dumps({'required_caller_sentinel': sentinel}))
+        self.assertEqual(ownership.check_duplication(self.root)[0], [])
+
+    def test_preserve_command_reports_a_lost_token(self):
+        before, after = self.root / 'before', self.root / 'after'
+        for directory, body in ((before, 'Run `tool --strict`.'), (after, 'Run the tool.')):
+            directory.mkdir()
+            (directory / 'SKILL.md').write_text(body + '\n')
+        err = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+            code = ownership.main(['preserve', '--repository', str(self.root),
+                                   '--before', str(before), '--after', str(after)])
+        self.assertEqual(code, 1)
+        self.assertIn('tool --strict', err.getvalue())
 
 
 class RealTree(unittest.TestCase):
