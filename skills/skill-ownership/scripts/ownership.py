@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import audit as audit_module  # noqa: E402
 import delegation_contract  # noqa: E402
 import docs_contract  # noqa: E402
 import guardrails  # noqa: E402
@@ -161,6 +162,10 @@ def main(argv=None) -> int:
     check.add_argument('--upstream', action='store_true',
                        help='this is the skill-ownership repository itself: require VERSION '
                             'agreement instead of a downstream pin')
+    audit = commands.add_parser(
+        'audit', help='read-only report: section classes, routing gaps, size and links')
+    audit.add_argument('--repository', type=Path, default=Path.cwd())
+    audit.add_argument('--format', choices=('markdown', 'json'), default='markdown')
     ratchet = commands.add_parser('ratchet', help='show or record the SKILL.md size baseline')
     ratchet.add_argument('--repository', type=Path, default=Path.cwd())
     ratchet.add_argument('--record', action='store_true',
@@ -178,6 +183,11 @@ def main(argv=None) -> int:
     if args.command == 'check':
         return run_checks(repository, UPSTREAM_CHECKS if args.upstream else DOWNSTREAM_CHECKS)
     try:
+        if args.command == 'audit':
+            report = audit_module.audit(repository)
+            print(json.dumps(report, indent=2) if args.format == 'json'
+                  else audit_module.render_markdown(report), end='\n' if args.format == 'json' else '')
+            return 0
         if args.command == 'ratchet':
             return run_ratchet(repository, args.record)
         return run_preserve(repository, args, parser)

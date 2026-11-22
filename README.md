@@ -17,8 +17,21 @@ and the skill that audits a repository and carries the contract by version.
 | --- | --- |
 | `skills/skill-ownership/` | The skill and everything a downstream repository carries |
 | `scripts/` | Repository-only entry points: checks, release metadata, disclosure scans |
+| `skill_evals/` | Eval cases, one per skill |
+| `policy/` | This repository's own policy files; it obeys its own checks |
 | `tests/` | Fixture tests |
 | `security/` | Disclosure policy for the publication gates |
+
+## Adopting it
+
+A downstream repository carries `skills/skill-ownership/` and a pin, then runs:
+
+```sh
+python3 skills/skill-ownership/scripts/ownership.py audit --repository .   # read-only report
+python3 skills/skill-ownership/scripts/ownership.py check --repository .   # every check
+```
+
+The [skill](skills/skill-ownership/SKILL.md) holds the workflow.
 
 ## Checks
 
