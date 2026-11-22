@@ -10,6 +10,7 @@ contract is always required.
 | `root-contract-docs.json` | the optional `docs` key inside `policy/root-contract.json` | `docs-contract` |
 | `delegation-contract.json` | `policy/delegation-contract.json` | `delegation-contract` |
 | `vendored-imports.json` | `policy/vendored-imports.json` | `vendored-imports` |
+| `skill-ownership-pin.json` | `policy/skill-ownership-pin.json` (always required downstream) | `pin` |
 
 Raise each `minimum` to the real count once the repository passes, so a scan that silently
 checks less than it should fails instead of passing.

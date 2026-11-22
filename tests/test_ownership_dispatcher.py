@@ -24,11 +24,14 @@ The limit holds.
 | Request | Owning skill |
 | --- | --- |
 | Alpha work | [Alpha](skills/alpha/SKILL.md) |
+| Ownership | [Own](skills/skill-ownership/SKILL.md) |
 
 ## Policy Synchronization
 
 Keep both files identical.
 """
+CARRIED = ('---\nname: skill-ownership\ndescription: "Audits. Use when auditing."\n'
+           'metadata:\n  version: "0.1.0"\n---\n')
 SKILL = '---\nname: alpha\ndescription: "Does alpha work. Use when alpha is requested."\n---\n\n# Alpha\n'
 
 
@@ -41,14 +44,20 @@ class DispatcherFixture(unittest.TestCase):
             (self.root / name).write_text(ROOT_TEXT, encoding='utf-8')
         (self.root / 'skills/alpha').mkdir(parents=True)
         (self.root / 'skills/alpha/SKILL.md').write_text(SKILL, encoding='utf-8')
+        (self.root / 'skills/skill-ownership').mkdir()
+        (self.root / 'skills/skill-ownership/SKILL.md').write_text(CARRIED, encoding='utf-8')
         (self.root / 'policy').mkdir()
+        (self.root / 'policy/skill-ownership-pin.json').write_text(json.dumps({
+            'schema': 'skill-ownership-pin/v1',
+            'upstream_repository': 'https://github.com/example/skill-ownership',
+            'commit': 'a' * 40, 'version': '0.1.0', 'local_adaptations': []}))
         self.policy = {
             'schema': 'root-contract/v1', 'files': ['AGENTS.md', 'CLAUDE.md'], 'max_lines': 50,
             'ownership_clause': CLAUSE,
             'allowed_sections': ['Routing', 'Policy Synchronization'],
             'required_sections': ['Routing', 'Policy Synchronization'],
             'routing_section': 'Routing', 'skills_dir': 'skills',
-            'minimum': {'sections': 2, 'skills': 1}}
+            'minimum': {'sections': 2, 'skills': 2}}
         self.save()
 
     def save(self):
@@ -64,7 +73,9 @@ class DispatcherFixture(unittest.TestCase):
         code, out, err = self.run_checks()
         self.assertEqual(code, 0, err)
         self.assertIn('root-contract: 2 root file(s)', out)
-        self.assertIn('skill-validation: 1 skill package(s) valid — PASSED', out)
+        self.assertIn('skill-validation: 2 skill package(s) valid — PASSED', out)
+        self.assertIn('frontmatter: metadata.version is a single quoted SemVer — PASSED', out)
+        self.assertIn('pin: pin matches the carried copy — PASSED', out)
         for optional in ('docs-contract', 'delegation-contract', 'vendored-imports'):
             self.assertIn(f'{optional}: not configured', out)
 
@@ -101,22 +112,14 @@ class DispatcherFixture(unittest.TestCase):
         self.assertIn('not byte-identical', err)
 
     def test_carried_skill_ownership_copy_needs_no_vendored_import_pin(self):
-        carried = self.root / 'skills/skill-ownership'
-        carried.mkdir()
-        (carried / 'SKILL.md').write_text(
-            '---\nname: skill-ownership\ndescription: "Audits. Use when auditing."\n'
-            'metadata:\n  version: "0.1.0"\n---\n', encoding='utf-8')
-        (self.root / 'AGENTS.md').write_text(ROOT_TEXT.replace(
-            '## Policy', '| Own | [Own](skills/skill-ownership/SKILL.md) |\n\n## Policy'))
-        (self.root / 'CLAUDE.md').write_text((self.root / 'AGENTS.md').read_text())
         imported = self.root / 'skills/imported'
         imported.mkdir()
         (imported / 'SKILL.md').write_text(
             '---\nname: imported\ndescription: "Imports. Use when importing."\n'
             'metadata:\n  version: "1.2.3"\n---\n', encoding='utf-8')
-        (self.root / 'AGENTS.md').write_text((self.root / 'AGENTS.md').read_text().replace(
-            '## Policy', '| Imp | [Imp](skills/imported/SKILL.md) |\n\n## Policy'))
-        (self.root / 'CLAUDE.md').write_text((self.root / 'AGENTS.md').read_text())
+        routed = ROOT_TEXT.replace('## Policy', '| Imp | [Imp](skills/imported/SKILL.md) |\n\n## Policy')
+        for name in ('AGENTS.md', 'CLAUDE.md'):
+            (self.root / name).write_text(routed, encoding='utf-8')
         (self.root / 'policy/vendored-imports.json').write_text(json.dumps({
             'schema': 'vendored-imports/v1', 'skills': {'skills/imported': {
                 'upstream_repository': 'https://github.com/example/upstream',
@@ -125,12 +128,46 @@ class DispatcherFixture(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertIn('vendored-imports: 1 imported skill(s) verified', out)
 
+    def test_downstream_run_fails_without_a_pin_or_with_a_disagreeing_one(self):
+        pin = self.root / 'policy/skill-ownership-pin.json'
+        saved = pin.read_text()
+        pin.write_text(saved.replace('0.1.0', '0.1.1'))
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 1)
+        self.assertIn('does not match', err)
+        pin.unlink()
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 1)
+        self.assertIn('pin is missing', err)
+
+    def test_carried_frontmatter_with_an_extra_metadata_key_fails(self):
+        (self.root / 'skills/skill-ownership/SKILL.md').write_text(
+            CARRIED.replace('  version: "0.1.0"\n', '  version: "0.1.0"\n  commit: "abc"\n'))
+        code, out, err = self.run_checks()
+        self.assertEqual(code, 1)
+        self.assertIn('frontmatter: FAILED', out)
+        self.assertIn('key other than version', err)
+
+    def test_upstream_run_needs_no_pin_but_requires_version_agreement(self):
+        (self.root / 'policy/skill-ownership-pin.json').unlink()
+        (self.root / 'VERSION').write_text('0.1.0\n')
+        (self.root / 'skills/alpha/SKILL.md').write_text(
+            SKILL.replace('---\n\n# Alpha', 'metadata:\n  version: "0.1.0"\n---\n\n# Alpha'))
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = ownership.run_checks(self.root, ownership.UPSTREAM_CHECKS)
+        self.assertEqual(code, 0, err.getvalue())
+        self.assertIn('version-agreement: VERSION agrees with 2 skill(s) — PASSED', out.getvalue())
+        (self.root / 'VERSION').write_text('0.2.0\n')
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+            self.assertEqual(ownership.run_checks(self.root, ownership.UPSTREAM_CHECKS), 1)
+
 
 class RealTree(unittest.TestCase):
     def test_this_repository_passes_its_own_checks(self):
         out, err = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-            code = ownership.run_checks(REPOSITORY_ROOT)
+            code = ownership.run_checks(REPOSITORY_ROOT, ownership.UPSTREAM_CHECKS)
         self.assertEqual(code, 0, err.getvalue())
 
     def test_policy_templates_are_valid_json(self):

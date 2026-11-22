@@ -5,6 +5,8 @@ One entry point for a repository that carries this skill: `ownership.py check` r
 check in a fixed order and prints one line per check. A check whose optional policy is
 absent reports `not configured`; a policy that is present but unreadable or malformed
 fails closed. The root contract is the principle itself, so it is always required.
+A downstream repository must also carry a pin that matches its copy of this skill; the
+upstream repository runs with `--upstream`, where VERSION agreement takes the pin's place.
 """
 from __future__ import annotations
 
@@ -20,6 +22,7 @@ import docs_contract  # noqa: E402
 import root_contract  # noqa: E402
 import skill_validation  # noqa: E402
 import vendored_imports  # noqa: E402
+import versioning  # noqa: E402
 
 ROOT_POLICY = 'policy/root-contract.json'
 NOT_CONFIGURED = 'not configured'
@@ -64,16 +67,33 @@ def check_skill_validation(repository: Path) -> tuple[list[str], str]:
     return errors, f'{count} skill package(s) valid'
 
 
+def check_frontmatter(repository: Path) -> tuple[list[str], str]:
+    path = repository / versioning.CARRIED_SKILL / 'SKILL.md'
+    return versioning.frontmatter_errors(path), 'metadata.version is a single quoted SemVer'
+
+
+def check_pin(repository: Path) -> tuple[list[str], str]:
+    return versioning.pin_errors(repository), 'pin matches the carried copy'
+
+
+def check_version_agreement(repository: Path) -> tuple[list[str], str]:
+    errors, count = versioning.agreement_errors(repository)
+    return errors, f'VERSION agrees with {count} skill(s)'
+
+
 CHECKS = (
     ('root-contract', check_root_contract),
     ('docs-contract', check_docs_contract),
     ('delegation-contract', check_delegation_contract),
     ('vendored-imports', check_vendored_imports),
     ('skill-validation', check_skill_validation),
+    ('frontmatter', check_frontmatter),
 )
+DOWNSTREAM_CHECKS = CHECKS + (('pin', check_pin),)
+UPSTREAM_CHECKS = CHECKS + (('version-agreement', check_version_agreement),)
 
 
-def run_checks(repository: Path, checks=CHECKS) -> int:
+def run_checks(repository: Path, checks=DOWNSTREAM_CHECKS) -> int:
     """Run every check; never stop at the first failure, so one run shows the whole state."""
     failed = 0
     for name, function in checks:
@@ -100,8 +120,12 @@ def main(argv=None) -> int:
     commands = parser.add_subparsers(dest='command', required=True)
     check = commands.add_parser('check', help='run every ownership check')
     check.add_argument('--repository', type=Path, default=Path.cwd())
+    check.add_argument('--upstream', action='store_true',
+                       help='this is the skill-ownership repository itself: require VERSION '
+                            'agreement instead of a downstream pin')
     args = parser.parse_args(argv)
-    return run_checks(args.repository.resolve())
+    checks = UPSTREAM_CHECKS if args.upstream else DOWNSTREAM_CHECKS
+    return run_checks(args.repository.resolve(), checks)
 
 
 if __name__ == '__main__':

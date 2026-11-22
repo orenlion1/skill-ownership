@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 scripts/release.py
-python3 skills/skill-ownership/scripts/ownership.py check --repository .
+python3 skills/skill-ownership/scripts/ownership.py check --repository . --upstream
 python3 -m compileall -q scripts skills tests
 python3 -m unittest discover -s tests -v
 cmp AGENTS.md CLAUDE.md

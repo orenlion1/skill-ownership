@@ -5,9 +5,13 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'skills/skill-ownership/scripts'))
+import versioning  # noqa: E402
+
 SEMVER = re.compile(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)")
 
 
@@ -31,8 +35,9 @@ def validate(root, tag=None):
     license_text = (root / 'LICENSE').read_text()
     if not license_text.startswith('MIT License\n\nCopyright (c) 2026 Oren Lion\n'):
         raise ValueError('Missing MIT license attribution')
-    if tag is not None and tag != current:
-        raise ValueError(f'Tag {tag!r} differs from VERSION {current}')
+    errors, _ = versioning.agreement_errors(root, tag)
+    if errors:
+        raise ValueError('; '.join(errors))
     return current, package
 
 
@@ -52,7 +57,10 @@ def bump(root, target, check=False):
         raise ValueError('New version must be greater than VERSION')
     # Validate every input before changing either release-owned file.
     package['version'] = target
+    skills = versioning.skill_files(root)
     if not check:
+        for skill in skills:
+            versioning.set_version(skill, target)
         (root / 'VERSION').write_text(target + '\n')
         (root / 'package.json').write_text(json.dumps(package, indent=2) + '\n')
     return f'{current} -> {target}'
