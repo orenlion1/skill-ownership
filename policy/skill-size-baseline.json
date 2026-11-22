@@ -1,6 +1,7 @@
 {
   "schema": "skill-size-baseline/v1",
   "skills": {
+    "skills/release-it": 3941,
     "skills/skill-ownership": 4348
   }
 }

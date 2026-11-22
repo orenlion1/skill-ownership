@@ -10,6 +10,7 @@ holds.
 | Request or situation | Owning skill |
 | --- | --- |
 | Auditing a repository against the skill ownership principle, refactoring it toward a routing table with one owner per rule, checking the contract, or syncing a carried copy | [Skill Ownership](skills/skill-ownership/SKILL.md) |
+| `run release-it`, repository releases | [Release It](skills/release-it/SKILL.md) with [VERSIONING.md](VERSIONING.md) |
 
 ## Required Dependencies
 
