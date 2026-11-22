@@ -31,6 +31,7 @@ python3 skills/skill-ownership/scripts/ownership.py <command> --repository .
 - Adopting the principle in a repository, or checking that a repository still obeys it.
 - A root file is growing, or a rule is stated in more than one place.
 - Adding, moving, or economizing a skill.
+- Checking whether the carried copy is behind upstream, or updating it.
 - Never for releasing a repository or for the work a routed skill owns.
 
 ## Audit
@@ -56,6 +57,13 @@ Keep always-loaded text small with the guardrails in
 [economization](references/economization.md): `ratchet --record` admits deliberate growth,
 and `preserve` proves a rewrite lost no command, flag, path or bound.
 
+## Sync
+
+`sync` is read-only by default: it reports the carried release, the latest release, what
+changed between them, and any undeclared drift (exit 0 current and clean, 3 behind, 4
+drift). `sync --apply` replaces the carried copy and updates the pin together.
+[Sync](references/sync.md) covers adoption, local adaptations, and what sync never touches.
+
 ## Evals
 
 Every skill needs an eval case. [Evals](references/evals.md) covers the case shape, the
@@ -80,4 +88,5 @@ quality gate, and optional model execution.
 
 - `ownership.py check` passes, and no check the repository relies on reports `not configured`.
 - The root files are byte-identical and open with the clause.
+- After a sync, the pin and the carried `metadata.version` name the same release.
 - A refactor's `preserve` run reports no lost token, or every removal is declared with a reason.
