@@ -10,19 +10,19 @@ skill responsible for the capability, the correction becomes one more note in AG
 CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
 up, copies of the same rule drift, and none of it is tested.
 
-Skill ownership narrows functionality into modular units: **sub-skills, each owning one
-capability**. A sub-skill holds its capability's workflow, guidance, and verification, the way
+Skill ownership splits a repository's agent guidance into modular units: **skills, each owning
+one capability**. A skill holds its capability's workflow, guidance, and verification, the way
 a module owns one responsibility in code, so the test-account filter belongs to the
-data-analysis sub-skill and the validation loop to the document-editing sub-skill. The root
-files become a router: they send each request to the sub-skill that owns it and keep only the
-policy no sub-skill covers. They open with this clause:
+data-analysis skill and the validation loop to the document-editing skill. The root files are
+not a skill: they are the router that sends each request to the skill that owns it and keeps
+only the policy no skill covers. They open with this clause:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
 > here is policy that no owner covers, and where such a policy limits an owner, the limit holds.
 
-Every correction then lands in the sub-skill responsible for that capability, every rewrite is
-checked like a code change, and an improved sub-skill reaches other repositories by version
+Every correction then lands in the skill responsible for that capability, every rewrite is
+checked like a code change, and an improved skill reaches other repositories by version
 instead of by copy. This repository is the upstream: the clause, the checks that enforce it,
 and the skill that adopts, audits, and syncs it. It obeys its own checks.
 
@@ -30,7 +30,7 @@ and the skill that adopts, audits, and syncs it. It obeys its own checks.
 
 | In code | Here | Best practice it enforces |
 | --- | --- | --- |
-| A module with one responsibility | A sub-skill owns one capability; workflow text found in a root file moves to that sub-skill | [Design coherent units](https://agentskills.io/skill-creation/best-practices#design-coherent-units) |
+| A module with one responsibility | A skill owns one capability; workflow text found in a root file moves to that skill | [Design coherent units](https://agentskills.io/skill-creation/best-practices#design-coherent-units) |
 | A dispatch table | Root files hold routes and limits only, under a line budget | [Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key) |
 | A public interface | A kebab-case name matching its directory, and a one-line description that states its trigger | [Writing effective descriptions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#writing-effective-descriptions), [Naming conventions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#naming-conventions) |
 | Unit tests | An eval case for every skill, run in CI | [Build evaluations first](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#build-evaluations-first) |
