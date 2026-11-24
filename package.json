@@ -1,6 +1,6 @@
 {
   "name": "skill-ownership",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "The skill ownership principle: one owner per rule, enforced by checks, carried by version.",
   "license": "MIT",
