@@ -10,15 +10,15 @@ skill responsible for the capability, the correction becomes one more note in AG
 CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
 up, copies of the same rule drift, and none of it is tested.
 
-A repository of agent skills serves one **domain**: a set of skills for one area of work, with
-AGENTS.md and CLAUDE.md as the router.
+A **skill domain** is a cohesive bundle of skills for one area of work, the way a plugin
+bundles them: one repository, with AGENTS.md and CLAUDE.md as its router.
 
 - Production investigations: skills for querying Grafana, AWS, and Slack, citing evidence,
   and writing reports.
 - Incident reviews: skills for post-incident reviews and their recurring placeholders.
 - Development delivery: skills for running development tasks through to delivery.
 
-Skill ownership splits that domain into modular units: **skills, each owning one
+Skill ownership splits a skill domain into modular units: **skills, each owning one
 capability**. A skill holds its capability's workflow, guidance, and verification, the way a
 module owns one responsibility in code, so the test-account filter belongs to the
 data-analysis skill and the validation loop to the document-editing skill. The root files are
@@ -30,8 +30,8 @@ keeping only the policy no skill covers. They open with this clause:
 > here is policy that no owner covers, and where such a policy limits an owner, the limit holds.
 
 Every correction then lands in the skill responsible for that capability, every rewrite is
-checked like a code change, and an improved skill reaches other repositories by version
-instead of by copy. This repository is the upstream: the clause, the checks that enforce it,
+checked like a code change, and an improved skill reaches other domains by version instead
+of by copy. This repository is the upstream: the clause, the checks that enforce it,
 and the skill that adopts, audits, and syncs it. It obeys its own checks.
 
 ## Skill as code
