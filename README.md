@@ -44,9 +44,10 @@ sections are classified.
 
 ## Getting started
 
-You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex. Copy
-each request into the agent, in order. The [skill](skills/skill-ownership/SKILL.md) holds the
-commands behind each step.
+You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex. The
+[skill](skills/skill-ownership/SKILL.md) holds the commands behind each step.
+
+Copy each request into the agent, in order.
 
 ### 1. Import
 
