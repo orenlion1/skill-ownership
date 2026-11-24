@@ -64,14 +64,14 @@ class InstitutionalScanTests(unittest.TestCase):
         self.assertNotEqual(self.scan(repo=unborn).returncode, 0)
 
     def test_private_identifiers_in_public_url_components_are_blocked(self):
-        email = 'person' + '@' + 'private-hospital.org'
+        email = 'person' + '@' + 'private-institution.org'
         base = 'https://github.com/'
         fixtures = [
             (base + 'search?q=' + email, 'email'),
             (base + 'contact/' + email, 'email'),
             (base + '#' + email, 'email'),
-            (base + 'search?q=person%40private-hospital.org', 'email'),
-            (base + 'contact/person%40private-hospital.org', 'email'),
+            (base + 'search?q=person%40private-institution.org', 'email'),
+            (base + 'contact/person%40private-institution.org', 'email'),
             (base + '?account=%31' + '23456789012', 'account-identifier'),
             (base + '?ticket=CASE%2D' + '3471', 'ticket-identifier'),
         ]
@@ -119,7 +119,7 @@ class InstitutionalScanTests(unittest.TestCase):
 
     def test_detached_head_cannot_hide_data(self):
         self.git('checkout', '--detach')
-        self.write('note.md', 'contact' + '@' + 'private-hospital.org')
+        self.write('note.md', 'contact' + '@' + 'private-institution.org')
         self.commit()
         self.assertEqual(self.scan().returncode, 1)
 
@@ -131,14 +131,14 @@ class InstitutionalScanTests(unittest.TestCase):
         self.assertNotEqual(self.scan().returncode, 0)
 
     def test_nested_annotations_are_scanned_without_inner_refs(self):
-        self.git('tag', '-a', 'inner', '-m', 'contact' + '@' + 'private-hospital.org')
+        self.git('tag', '-a', 'inner', '-m', 'contact' + '@' + 'private-institution.org')
         self.git('tag', '-a', 'middle', 'inner', '-m', 'Public middle annotation')
         self.git('tag', '-a', 'outer', 'middle', '-m', 'Public outer annotation')
         self.git('tag', '-d', 'inner', 'middle')
         result = self.scan()
         self.assertEqual(result.returncode, 1)
         self.assertIn('email', result.stdout)
-        self.assertNotIn('private-hospital.org', result.stdout + result.stderr)
+        self.assertNotIn('private-institution.org', result.stdout + result.stderr)
 
     def test_clean_nested_annotations_pass(self):
         self.git('tag', '-a', 'inner', '-m', 'Public inner annotation')
@@ -151,7 +151,7 @@ class InstitutionalScanTests(unittest.TestCase):
         fixtures = [('docs/report.md', 'Public text.'), ('logs/evidence.txt', 'Public text.'),
                     ('.env', 'PLAIN=value'), ('note.md', 'https://' + 'tenant.atlassian.net'),
                     ('note.md', 'https://' + 'tenant.grafana.net'),
-                    ('note.md', 'https://' + 'private-hospital.org/api'),
+                    ('note.md', 'https://' + 'private-institution.org/api'),
                     ('note.md', 'https://' + 'user:password' + '@' + 'github.com/private'),
                     ('note.md', 'AWS account: ' + '123456' + '789012'),
                     ('note.md', 'CASE-' + '3471')]
@@ -172,7 +172,7 @@ class InstitutionalScanTests(unittest.TestCase):
             'length': len(canonical), 'sha256': hashlib.sha256(canonical.encode()).hexdigest()}]
         private_policy = Path(self.temp.name) / 'policy.json'
         private_policy.write_text(json.dumps(policy))
-        self.write('note.md', 'SYNTHETIC-Institution clinical details')
+        self.write('note.md', 'SYNTHETIC-Institution internal details')
         self.git('add', '.')
         result = self.scan('--staged', policy=private_policy)
         self.assertEqual(result.returncode, 1)
@@ -198,7 +198,7 @@ class InstitutionalScanTests(unittest.TestCase):
         self.commit('Customer ticket CASE-' + '3471')
         self.assertEqual(self.scan().returncode, 1)
         self.git('commit', '--amend', '-qm', 'Public fixture')
-        self.git('tag', '-a', 'fixture', '-m', 'contact' + '@' + 'private-hospital.org')
+        self.git('tag', '-a', 'fixture', '-m', 'contact' + '@' + 'private-institution.org')
         result = self.scan()
         self.assertEqual(result.returncode, 1)
         self.assertIn('email', result.stdout)
@@ -255,7 +255,7 @@ class InstitutionalScanTests(unittest.TestCase):
         self.assertEqual(self.scan('--staged').returncode, 1)
 
     def test_path_disclosure_is_redacted_even_for_workflow_commands(self):
-        name = '::error::person' + '@' + 'private-hospital.org.md'
+        name = '::error::person' + '@' + 'private-institution.org.md'
         self.write(name, 'Public text.\n')
         self.git('add', '.')
         result = self.scan('--staged')

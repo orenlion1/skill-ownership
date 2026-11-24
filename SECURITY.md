@@ -1,7 +1,7 @@
 # Publication security
 
 This repository contains reusable skills, checks, and synthetic fixtures. Task documents,
-logs, telemetry, customer or patient records, credentials, and institutional identifiers
+logs, telemetry, personal or customer data, credentials, and institutional identifiers
 must stay outside published Git objects. A clean scan is evidence for the configured rules,
 not proof that arbitrary prose or encoded data contains no confidential information.
 
@@ -92,5 +92,11 @@ approvals are not OCR or content analysis.
 
 If a credential reaches a remote, revoke or rotate it before history cleanup. Remove
 institutional data from every affected ref and address hosted copies separately. Avoid
-echoing the finding into CI logs or a public issue. Use a private reporting channel with
-the repository owner; no hosted reporting channel has been configured for the new repository.
+echoing the finding into CI logs or a public issue; report it privately as described below.
+
+## Reporting a vulnerability
+
+Report vulnerabilities and disclosure findings privately through
+[GitHub private vulnerability reporting](https://github.com/orenlion1/skill-ownership/security/advisories/new),
+never in a public issue, pull request, or discussion. Include the affected file or ref and
+how to reproduce the finding, without repeating any secret or institutional value.
