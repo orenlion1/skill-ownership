@@ -25,7 +25,7 @@ examples, and when to use each one.
 
 ### 2. Import the skill
 
-Ask the agent: *"Adopt skill ownership from https://github.com/orenlion1/skill-ownership in
+Ask the agent: *"Adopt skill ownership from <https://github.com/orenlion1/skill-ownership> in
 this repository."*
 
 The link tells the agent where the skill lives, since your repository does not carry it yet.
