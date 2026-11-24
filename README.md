@@ -13,7 +13,7 @@ up, copies of the same rule drift, and none of it is tested.
 A **skill domain** is a cohesive bundle of skills for one area of work, the way a plugin
 bundles them: one repository, with AGENTS.md and CLAUDE.md as its router.
 
-- Production investigations: skills for querying Grafana, AWS, and Slack, citing evidence,
+- [Production investigations](https://github.com/orenlion1/investigation-skills): skills for querying Grafana, AWS, and Slack, citing evidence,
   and writing reports.
 - Incident reviews: skills for post-incident reviews and their recurring placeholders.
 - Development delivery: skills for running development tasks through to delivery.
