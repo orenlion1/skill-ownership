@@ -24,7 +24,8 @@ and the skill that audits a repository and carries the contract by version.
 
 ## Adopting it
 
-A downstream repository carries `skills/skill-ownership/` and a pin, then runs:
+Copy `skills/skill-ownership/` into the adopting repository and record its source version
+and commit in `policy/skill-ownership-pin.json`. Then run from that repository's root:
 
 ```sh
 python3 skills/skill-ownership/scripts/ownership.py audit --repository .   # read-only report
