@@ -21,9 +21,6 @@ improved skill reaches other repositories by version instead of by copy. This re
 the upstream: the clause, the checks that enforce it, and the skill that adopts, audits, and
 syncs it. It obeys its own checks.
 
-**You talk to the agent; the agent runs the tools.** Every block below is a request to paste
-into your coding agent, not a shell command.
-
 ## Skill as code
 
 | In code | Here | Best practice it enforces |
@@ -46,6 +43,8 @@ sections are classified.
 
 You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex. The
 [skill](skills/skill-ownership/SKILL.md) holds the commands behind each step.
+
+**You talk to the agent; the agent runs the tools.**
 
 Copy each request into the agent, in order.
 
