@@ -1,6 +1,6 @@
 ---
 name: skill-ownership
-description: "Audit a repository against the skill ownership principle and refactor it toward a routing table with one owner per rule. Use when adopting, checking, or syncing the ownership contract."
+description: "Audit a repository against the skill ownership principle and refactor it toward a routing table with one skill per capability. Use when adopting, checking, or syncing the ownership contract."
 metadata:
   version: "0.1.4"
 ---

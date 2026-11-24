@@ -7,7 +7,7 @@
         "top_k": 3
       },
       {
-        "prompt": "Refactor AGENTS.md toward a routing table with one owner per rule and move the workflow content into the owning skills",
+        "prompt": "Refactor AGENTS.md toward a routing table with one skill per capability and move the workflow content into the owning skills",
         "top_k": 3
       },
       {
