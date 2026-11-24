@@ -1,10 +1,15 @@
 # Skill Ownership
 
-Agent instructions decay the way unowned code does. AGENTS.md and CLAUDE.md grow with every
-"just add a note for the agent" until they are a manual. The release steps sit in the root
-file, again in a skill, and again in the README; one copy changes, the others do not, and the
-agent follows whichever it read first. Every line of a root file loads into every session,
-relevant or not. And unlike code, none of it is reviewed against a contract or tested.
+Good skills evolve. They are
+[extracted from a hands-on task](https://agentskills.io/skill-creation/best-practices#extract-from-a-hands-on-task)
+(the steps that worked, the corrections you made, the context the agent lacked) and then
+[refined with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution).
+That loop never stops, and without an owner its output lands in the wrong place. A correction
+made mid-task becomes one more "note for the agent" in AGENTS.md or CLAUDE.md, until the root
+files are a manual. The release steps sit in the root file, again in a skill, and again in the
+README; one copy changes, the others do not, and the agent follows whichever it read first.
+Every line of a root file loads into every session, relevant or not. And unlike code, none of
+it is reviewed against a contract or tested.
 
 Skill ownership treats agent guidance as code: **one owner per rule**. Each skill owns its
 workflow, guidance, and verification. The root files become a router: they say which request
@@ -14,11 +19,19 @@ goes to which skill and keep only the policy no skill covers. They open with thi
 > verification; follow the owner rather than restating or overriding it here. Everything else
 > here is policy that no owner covers, and where such a policy limits an owner, the limit holds.
 
-The result: a behavior changes in one place, the always-loaded text stays small, changes to
-agent guidance get the same review and CI as code, and several repositories can share one
-versioned skill without forking it. This repository is the upstream for the principle: the
-clause, the checks that enforce it, and the skill that audits a repository and carries the
-contract by version.
+That gives each turn of the evolution loop a destination. A captured correction goes to the
+skill that owns the work: the audit flags workflow text in a root file, and the refactor moves
+it into its owner or into a new [coherent unit](https://agentskills.io/skill-creation/best-practices#design-coherent-units)
+with its own route. A refinement is checked like a code change: every skill has an eval case,
+a preservation check proves a rewrite kept every command, flag, path, and bound, and the size
+ratchet makes each increase a recorded decision. An improved skill is shared by version, and
+sync carries it to every repository that uses it without forking.
+
+The result: a behavior changes in one place, the always-loaded text stays small, and agent
+guidance gets the same review and CI as code. This repository is the upstream for the principle: the clause, the checks that
+enforce it, and the skill that audits a repository and carries the contract by version. It
+evolves the same way: its adoption steps began as commands in this README and now live in the
+skill's Adopt section.
 
 **You talk to the agent; the agent runs the tools.** Every step in
 [Getting started](#getting-started) is a request you make to your coding agent, not a shell
@@ -62,33 +75,6 @@ fail, and applies the same discipline to the root files that route to your skill
 Other items on the page's [checklist](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#checklist-for-effective-skills),
 such as one-level-deep references, consistent terminology, avoiding time-sensitive
 information, and testing with every model you use, are not checked here; review them by hand.
-
-## How skills evolve
-
-Good skills are not written up front; they are
-[extracted from a hands-on task](https://agentskills.io/skill-creation/best-practices#extract-from-a-hands-on-task).
-You complete real work with an agent, correcting it and supplying context as you go, then
-capture what made it succeed: the steps that worked, the corrections you made, the input and
-output formats, and the context the agent did not have. Then you
-[refine with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution):
-run the skill on real tasks and feed back what triggered wrongly, what was missed, and what
-could be cut.
-
-That loop never stops, and without ownership its output lands in the wrong place. A
-correction made mid-task usually becomes one more note in CLAUDE.md, where it loads into
-every session and never reaches the skill that needed it. Skill ownership gives each turn of
-the loop a destination:
-
-| Stage | Without ownership | With skill ownership |
-| --- | --- | --- |
-| Capture a correction or new context from a task | A note appended to the root file | The audit flags workflow text in a root file; the refactor moves it into the skill that owns that work, or into a new skill with its own route |
-| Decide what each skill covers | Overlapping skills, and copies that disagree | One owner per rule, so each skill is a [coherent unit](https://agentskills.io/skill-creation/best-practices#design-coherent-units); a rule stated in both a skill and its references fails the duplication check |
-| Refine after real execution | Rewrites that quietly drop a command or a limit, and skills that only grow | Every skill has an eval case; a preservation check proves a rewrite kept every command, flag, path, and bound; the size ratchet makes each increase a recorded decision |
-| Share the improved skill | Copies that fork and drift apart | Versioned releases; sync reports what changed upstream and applies it, keeping any declared local adaptations |
-
-This repository evolves the same way. Its adoption steps began as commands in this README;
-they now live in the skill's Adopt section, where the agent that runs them reads them and the
-checks guard them.
 
 ## Getting started
 
