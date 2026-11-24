@@ -26,8 +26,9 @@ capability**. A skill holds its capability's workflow, guidance, and verificatio
 module owns one responsibility in code, so the test-account filter belongs to the
 data-analysis skill and the validation loop to the document-editing skill. The root files are
 not a skill: they are the domain's router, sending each request to the skill that owns it and
-keeping only the policy no skill covers. They open with this clause in AGENTS.md and
-CLAUDE.md:
+keeping only the policy no skill covers.
+
+They open with this clause in AGENTS.md and CLAUDE.md:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
