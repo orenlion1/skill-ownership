@@ -5,8 +5,8 @@ Skill usefulness evolves: skills are
 and [refined with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution).
 Each refinement corrects one capability: a BigQuery analysis learns to
 [always exclude test accounts](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#develop-skills-iteratively-with-claude); a Word edit
-learns to [validate the XML after every change](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops). With no skill
-responsible for the capability, the correction becomes one more note in AGENTS.md or
+learns to [validate the XML after every change](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops). With no specific
+skill responsible for the capability, the correction becomes one more note in AGENTS.md or
 CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
 up, copies of the same rule drift, and none of it is tested.
 
