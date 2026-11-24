@@ -21,8 +21,8 @@ improved skill reaches other repositories by version instead of by copy. This re
 the upstream: the clause, the checks that enforce it, and the skill that adopts, audits, and
 syncs it. It obeys its own checks.
 
-**You talk to the agent; the agent runs the tools.** Every step below is a request to your
-coding agent, not a shell command.
+**You talk to the agent; the agent runs the tools.** Every block below is a request to paste
+into your coding agent, not a shell command.
 
 ## Skill as code
 
@@ -44,24 +44,64 @@ sections are classified.
 
 ## Getting started
 
-You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex. The
-[skill](skills/skill-ownership/SKILL.md) holds the commands behind each step.
+You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex. Copy
+each request into the agent, in order. The [skill](skills/skill-ownership/SKILL.md) holds the
+commands behind each step.
 
-1. **Import.** *"Adopt skill ownership from <https://github.com/orenlion1/skill-ownership> in
-   this repository."* The agent copies the latest release into skills/skill-ownership/ and
-   records it in policy/skill-ownership-pin.json, without committing. Start from a clean
-   working tree. See [Adopt](skills/skill-ownership/SKILL.md#adopt).
-2. **Route.** Give the skill a row in the routing table of both root files, and keep them
-   identical. A new repository creates them with a title, the clause, and the table.
-3. **Audit.** *"Audit this repository against skill ownership."* A read-only report that
-   classifies every root-file section; treat its classes as proposals. See
-   [Audit](skills/skill-ownership/SKILL.md#audit).
-4. **Refactor.** *"Refactor the root files into a routing table."* Workflow text moves to its
-   owner and leaves a route behind. See [Refactor](skills/skill-ownership/SKILL.md#refactor).
-5. **Check.** *"Run the skill ownership checks."* Then add them to CI. See
-   [Checks](skills/skill-ownership/SKILL.md#checks).
-6. **Stay current.** *"Is our skill-ownership copy up to date?"* then *"Update skill ownership
-   to the latest release."* See [Sync](skills/skill-ownership/SKILL.md#sync).
+### 1. Import
+
+```text
+Adopt skill ownership from https://github.com/orenlion1/skill-ownership in this repository.
+```
+
+The agent copies the latest release into skills/skill-ownership/ and records it in
+policy/skill-ownership-pin.json, without committing. Start from a clean working tree. See
+[Adopt](skills/skill-ownership/SKILL.md#adopt).
+
+### 2. Route
+
+```text
+Route skill ownership in AGENTS.md and CLAUDE.md, and keep the two files identical.
+```
+
+The skill gets a row in the routing table of both root files. A repository without root files
+gets them with a title, the clause, and the table.
+
+### 3. Audit
+
+```text
+Audit this repository against skill ownership.
+```
+
+A read-only report that classifies every root-file section; treat its classes as proposals.
+See [Audit](skills/skill-ownership/SKILL.md#audit).
+
+### 4. Refactor
+
+```text
+Refactor the root files into a routing table.
+```
+
+Workflow text moves to its owning skill and leaves a route behind. See
+[Refactor](skills/skill-ownership/SKILL.md#refactor).
+
+### 5. Check
+
+```text
+Run the skill ownership checks, then add them to CI.
+```
+
+Every check prints one line; all should pass after the refactor. See
+[Checks](skills/skill-ownership/SKILL.md#checks).
+
+### 6. Stay current
+
+```text
+Is our skill-ownership copy up to date? If it is behind, update it to the latest release.
+```
+
+The report is read-only; the update replaces the carried copy and the pin together, without
+committing. See [Sync](skills/skill-ownership/SKILL.md#sync).
 
 ## Layout
 
