@@ -10,12 +10,15 @@ skill responsible for the capability, the correction becomes one more note in AG
 CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
 up, copies of the same rule drift, and none of it is tested.
 
-Skill ownership splits a repository's agent guidance into modular units: **skills, each owning
-one capability**. A skill holds its capability's workflow, guidance, and verification, the way
-a module owns one responsibility in code, so the test-account filter belongs to the
-data-analysis skill and the validation loop to the document-editing skill. The root files are
-not a skill: they are the router that sends each request to the skill that owns it and keeps
-only the policy no skill covers. They open with this clause:
+A repository of agent skills serves one **domain**: production investigations, with skills
+for querying Grafana, AWS, and Slack, citing evidence, and writing reports; incident reviews;
+or carrying development tasks through to delivery. Skill ownership splits that domain into
+modular units: **skills, each owning one capability**. A skill holds its capability's
+workflow, guidance, and verification, the way a module owns one responsibility in code, so
+the test-account filter belongs to the data-analysis skill and the validation loop to the
+document-editing skill. The root files are not a skill: they are the domain's router, sending
+each request to the skill that owns it and keeping only the policy no skill covers. They open
+with this clause:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
