@@ -1,6 +1,6 @@
 # Skill Ownership
 
-Good skills evolve: they are
+Skill usefulness evolves: skills are
 [extracted from a hands-on task](https://agentskills.io/skill-creation/best-practices#extract-from-a-hands-on-task)
 and [refined with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution).
 Without an owner, that loop's output lands in the wrong place. Each correction becomes one
