@@ -10,15 +10,20 @@ skill responsible for the capability, the correction becomes one more note in AG
 CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
 up, copies of the same rule drift, and none of it is tested.
 
-A repository of agent skills serves one **domain**: production investigations, with skills
-for querying Grafana, AWS, and Slack, citing evidence, and writing reports; incident reviews;
-or carrying development tasks through to delivery. Skill ownership splits that domain into
-modular units: **skills, each owning one capability**. A skill holds its capability's
-workflow, guidance, and verification, the way a module owns one responsibility in code, so
-the test-account filter belongs to the data-analysis skill and the validation loop to the
-document-editing skill. The root files are not a skill: they are the domain's router, sending
-each request to the skill that owns it and keeping only the policy no skill covers. They open
-with this clause:
+A repository of agent skills serves one **domain**: a set of skills for one area of work, with
+AGENTS.md and CLAUDE.md as the router.
+
+- Production investigations: skills for querying Grafana, AWS, and Slack, citing evidence,
+  and writing reports.
+- Incident reviews: skills for post-incident reviews and their recurring placeholders.
+- Development delivery: skills for running development tasks through to delivery.
+
+Skill ownership splits that domain into modular units: **skills, each owning one
+capability**. A skill holds its capability's workflow, guidance, and verification, the way a
+module owns one responsibility in code, so the test-account filter belongs to the
+data-analysis skill and the validation loop to the document-editing skill. The root files are
+not a skill: they are the domain's router, sending each request to the skill that owns it and
+keeping only the policy no skill covers. They open with this clause:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
