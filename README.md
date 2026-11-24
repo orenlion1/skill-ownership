@@ -1,15 +1,67 @@
 # Skill Ownership
 
-One owner per rule. A repository's root files (AGENTS.md, CLAUDE.md) open with the ownership
-clause and act as a router: they say which request goes to which skill and keep only the
-policy no skill covers. Each skill owns its workflow, guidance, and verification.
+Agent instructions decay the way unowned code does. AGENTS.md and CLAUDE.md grow with every
+"just add a note for the agent" until they are a manual. The release steps sit in the root
+file, again in a skill, and again in the README; one copy changes, the others do not, and the
+agent follows whichever it read first. Every line of a root file loads into every session,
+relevant or not. And unlike code, none of it is reviewed against a contract or tested.
+
+Skill ownership treats agent guidance as code: **one owner per rule**. Each skill owns its
+workflow, guidance, and verification. The root files become a router: they say which request
+goes to which skill and keep only the policy no skill covers. They open with this clause:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
 > here is policy that no owner covers, and where such a policy limits an owner, the limit holds.
 
-This repository is the upstream for that principle: the clause, the checks that enforce it,
-and the skill that audits a repository and carries the contract by version.
+The result: a behavior changes in one place, the always-loaded text stays small, changes to
+agent guidance get the same review and CI as code, and several repositories can share one
+versioned skill without forking it. This repository is the upstream for the principle: the
+clause, the checks that enforce it, and the skill that audits a repository and carries the
+contract by version.
+
+**You talk to the agent; the agent runs the tools.** Every step in
+[Getting started](#getting-started) is a request you make to your coding agent, not a shell
+command.
+
+## Skill as code
+
+Each skill is treated like a code module, and the checks hold it to that:
+
+| In code | In a skill-owned repository |
+| --- | --- |
+| A module with one owner | A skill that owns one workflow: its steps, guidance, and verification |
+| A public interface | The skill's description, which the router matches requests against |
+| Unit tests | An eval case for every skill, run by the quality gate |
+| A dispatch table | The root files: a routing table plus only the limits no skill covers |
+| A linter in CI | The ownership checks, which fail when workflow text gathers in a root file or a route has no skill |
+| A coverage ratchet | A size baseline: a skill grows only through a recorded, deliberate change |
+| A dependency and its lockfile | The carried skill and its pin file, kept current by sync |
+
+[The principle](skills/skill-ownership/references/principle.md) defines how each root-file
+section is classified. This repository obeys its own checks: its root files are a routing
+table, and CI fails when they drift.
+
+### Best practices it codifies
+
+Anthropic's [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+describe how to write one good skill. This repository turns several of them into checks that
+fail, and applies the same discipline to the root files that route to your skills:
+
+| Best practice | How it is enforced here |
+| --- | --- |
+| [Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key) | Root files hold routes and limits only, under a line budget; workflow text moves into the skill that owns it |
+| [Token budgets](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#token-budgets) | A per-skill size ratchet against a recorded baseline, so growth is always a reviewed decision |
+| [Writing effective descriptions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#writing-effective-descriptions) | Every description is one bounded line that states its trigger ("Use when", "Use for", or "Use only") |
+| [Naming conventions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#naming-conventions) | Skill names are lowercase and hyphenated, and match their directory |
+| [Progressive disclosure patterns](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#progressive-disclosure-patterns) | Detail lives in references; a duplication check fails when a rule is stated in both a skill and its references, and every link and heading anchor must resolve |
+| [Build evaluations first](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#build-evaluations-first) | Every skill needs an eval case; the quality gate runs them in CI, with optional execution against a model |
+| [Provide utility scripts](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#provide-utility-scripts) and [Implement feedback loops](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops) | One deterministic entry point runs every check and prints one line each, so the agent fixes and reruns until all pass |
+| [Package dependencies](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#package-dependencies) | The checks use the Python standard library only: nothing to install |
+
+Other items on the page's [checklist](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#checklist-for-effective-skills),
+such as one-level-deep references, consistent terminology, avoiding time-sensitive
+information, and testing with every model you use, are not checked here; review them by hand.
 
 ## Getting started
 
