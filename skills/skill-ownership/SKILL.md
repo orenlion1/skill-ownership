@@ -2,7 +2,7 @@
 name: skill-ownership
 description: "Audit a repository against skill ownership and refactor it toward a routing table with one skill per capability. Use when adopting, checking, or syncing the ownership contract."
 metadata:
-  version: "0.1.4"
+  version: "0.1.5"
 ---
 
 # Skill Ownership
