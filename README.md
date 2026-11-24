@@ -17,13 +17,10 @@ This guide takes a repository from nothing to a passing check. Each step names w
 your coding agent; the [skill](skills/skill-ownership/SKILL.md) holds the exact commands,
 examples, and when to use each one.
 
-### 1. Check the prerequisites
+You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex; it
+handles Python and git for you.
 
-- Python 3. The skill uses the standard library only, so there is nothing to install.
-- Git, and a clean working tree in the repository you are adopting into.
-- A coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code or Codex.
-
-### 2. Import the skill
+### 1. Import the skill
 
 Ask the agent: *"Adopt skill ownership from <https://github.com/orenlion1/skill-ownership> in
 this repository."*
@@ -33,16 +30,17 @@ The agent clones this repository next to yours and runs the first adoption from 
 copies the latest release into your skills/skill-ownership/ directory and writes
 policy/skill-ownership-pin.json, which records the release and commit you carry. Nothing is
 committed: review the new files and deliver them through your normal review path.
+Start from a clean working tree so the review shows only the import.
 
 To run the import yourself, follow [Adopt](skills/skill-ownership/SKILL.md#adopt).
 
-### 3. Route requests to the skill
+### 2. Route requests to the skill
 
 Give the skill a row in the routing table of both root files, so the agent knows to use it.
 If the repository has no root files yet, create AGENTS.md and CLAUDE.md with one title, the
 clause above, and the routing table. Keep the two files identical.
 
-### 4. Audit
+### 3. Audit
 
 Ask the agent: *"Audit this repository against skill ownership."*
 
@@ -51,7 +49,7 @@ workflow that belongs in a skill, and lists unrouted skills, routes without a sk
 skills, and broken links. Its classes are proposals; read each section before acting on one.
 See [Audit](skills/skill-ownership/SKILL.md#audit).
 
-### 5. Refactor
+### 4. Refactor
 
 Ask the agent: *"Refactor the root files into a routing table."*
 
@@ -59,7 +57,7 @@ The agent moves each workflow section into the skill that owns it, leaves a rout
 adds the policy files the checks read, and proves no command, flag, or path was lost in the
 move. See [Refactor](skills/skill-ownership/SKILL.md#refactor).
 
-### 6. Run the checks
+### 5. Run the checks
 
 Ask the agent: *"Run the skill ownership checks."*
 
@@ -68,7 +66,7 @@ expected; afterwards everything you rely on should pass and nothing should repor
 configured". Add the checks to continuous integration so they run on every pull request.
 See [Checks](skills/skill-ownership/SKILL.md#checks).
 
-### 7. Stay current
+### 6. Stay current
 
 Ask the agent: *"Is our skill-ownership copy up to date?"* and, when it is behind, *"Update
 skill ownership to the latest release."*
