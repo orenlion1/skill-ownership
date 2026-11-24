@@ -18,6 +18,9 @@ bundles them: one repository, with AGENTS.md and CLAUDE.md as its router.
 - Incident reviews: skills for post-incident reviews and their recurring placeholders.
 - Development delivery: skills for running development tasks through to delivery.
 
+A skill domain can evolve one step further: once its skills are stable, it can ship as a
+plugin that other teams install whole.
+
 Skill ownership splits a skill domain into modular units: **skills, each owning one
 capability**. A skill holds its capability's workflow, guidance, and verification, the way a
 module owns one responsibility in code, so the test-account filter belongs to the
