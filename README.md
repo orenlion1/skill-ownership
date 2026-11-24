@@ -63,6 +63,33 @@ Other items on the page's [checklist](https://platform.claude.com/docs/en/agents
 such as one-level-deep references, consistent terminology, avoiding time-sensitive
 information, and testing with every model you use, are not checked here; review them by hand.
 
+## How skills evolve
+
+Good skills are not written up front; they are
+[extracted from a hands-on task](https://agentskills.io/skill-creation/best-practices#extract-from-a-hands-on-task).
+You complete real work with an agent, correcting it and supplying context as you go, then
+capture what made it succeed: the steps that worked, the corrections you made, the input and
+output formats, and the context the agent did not have. Then you
+[refine with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution):
+run the skill on real tasks and feed back what triggered wrongly, what was missed, and what
+could be cut.
+
+That loop never stops, and without ownership its output lands in the wrong place. A
+correction made mid-task usually becomes one more note in CLAUDE.md, where it loads into
+every session and never reaches the skill that needed it. Skill ownership gives each turn of
+the loop a destination:
+
+| Stage | Without ownership | With skill ownership |
+| --- | --- | --- |
+| Capture a correction or new context from a task | A note appended to the root file | The audit flags workflow text in a root file; the refactor moves it into the skill that owns that work, or into a new skill with its own route |
+| Decide what each skill covers | Overlapping skills, and copies that disagree | One owner per rule, so each skill is a [coherent unit](https://agentskills.io/skill-creation/best-practices#design-coherent-units); a rule stated in both a skill and its references fails the duplication check |
+| Refine after real execution | Rewrites that quietly drop a command or a limit, and skills that only grow | Every skill has an eval case; a preservation check proves a rewrite kept every command, flag, path, and bound; the size ratchet makes each increase a recorded decision |
+| Share the improved skill | Copies that fork and drift apart | Versioned releases; sync reports what changed upstream and applies it, keeping any declared local adaptations |
+
+This repository evolves the same way. Its adoption steps began as commands in this README;
+they now live in the skill's Adopt section, where the agent that runs them reads them and the
+checks guard them.
+
 ## Getting started
 
 This guide takes a repository from nothing to a passing check. Each step names what to ask
