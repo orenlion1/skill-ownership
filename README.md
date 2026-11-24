@@ -3,23 +3,19 @@
 Skill usefulness evolves: skills are
 [extracted from a hands-on task](https://agentskills.io/skill-creation/best-practices#extract-from-a-hands-on-task)
 and [refined with real execution](https://agentskills.io/skill-creation/best-practices#refine-with-real-execution).
-Each refinement corrects one capability. A BigQuery analysis teaches the agent to
-[always exclude test accounts](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#develop-skills-iteratively-with-claude); a Word document
-edit teaches it to [validate the XML after every change](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops) and
-to [handle tracked changes](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#pattern-3-conditional-details) its own way; a PDF form
-teaches it to extract the fields before filling them. When no skill is responsible for that
-capability, the correction has nowhere to go. "Always exclude test accounts" becomes one more
-note in AGENTS.md or CLAUDE.md, loaded into every session, even one that only edits a Word
-document. Notes pile up until the root files are a manual, the same rule sits in the root
-file, a skill, and the README, and the copies drift. None of it is tested.
+Each refinement corrects one capability: a BigQuery analysis learns to
+[always exclude test accounts](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#develop-skills-iteratively-with-claude); a Word edit
+learns to [validate the XML after every change](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops). With no skill
+responsible for the capability, the correction becomes one more note in AGENTS.md or
+CLAUDE.md, loaded into every session, even one that only edits a Word document. Notes pile
+up, copies of the same rule drift, and none of it is tested.
 
 Skill ownership narrows functionality into modular units: **sub-skills, each owning one
 capability**. A sub-skill holds its capability's workflow, guidance, and verification, the way
-a module owns one responsibility in code, so every rule has exactly one owner: the test-account
-filter belongs to the data-analysis sub-skill, and the edit-then-validate loop to the
-document-editing sub-skill. The root files become a router: they send each request to the
-sub-skill that owns it and keep only the policy no sub-skill covers. They open with this
-clause:
+a module owns one responsibility in code, so the test-account filter belongs to the
+data-analysis sub-skill and the validation loop to the document-editing sub-skill. The root
+files become a router: they send each request to the sub-skill that owns it and keep only the
+policy no sub-skill covers. They open with this clause:
 
 > This document routes requests to their owners. Each owner holds its workflow, guidance, and
 > verification; follow the owner rather than restating or overriding it here. Everything else
