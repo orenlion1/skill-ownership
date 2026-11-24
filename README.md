@@ -25,13 +25,16 @@ examples, and when to use each one.
 
 ### 2. Import the skill
 
-Ask the agent: *"Adopt skill ownership in this repository."*
+Ask the agent: *"Adopt skill ownership from https://github.com/orenlion1/skill-ownership in
+this repository."*
 
+The link tells the agent where the skill lives, since your repository does not carry it yet.
 The agent clones this repository next to yours and runs the first adoption from it. That
 copies the latest release into your skills/skill-ownership/ directory and writes
 policy/skill-ownership-pin.json, which records the release and commit you carry. Nothing is
-committed: review the new files and deliver them through your normal review path. See
-[Adopt](skills/skill-ownership/SKILL.md#adopt).
+committed: review the new files and deliver them through your normal review path.
+
+To run the import yourself, follow [Adopt](skills/skill-ownership/SKILL.md#adopt).
 
 ### 3. Route requests to the skill
 

@@ -38,7 +38,7 @@ Typical requests, in the order a new repository meets them:
 
 | Ask the agent | Runs | When |
 | --- | --- | --- |
-| "Adopt skill ownership in this repository" | [Adopt](#adopt) | Once, while the repository carries no copy |
+| "Adopt skill ownership from https://github.com/orenlion1/skill-ownership in this repository" | [Adopt](#adopt) | Once, while the repository carries no copy |
 | "Audit this repository against skill ownership" | `audit` | Before a refactor, and after root files change |
 | "Refactor the root files into a routing table" | [Refactor](#refactor) | The audit found workflow in a root file |
 | "Run the skill ownership checks" | `check` | Before every pull request, and in CI |
