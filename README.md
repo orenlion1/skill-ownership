@@ -66,15 +66,16 @@ You need a coding agent that reads AGENTS.md or CLAUDE.md, such as Claude Code o
 
 Copy each request into the agent, in order.
 
-### 1. Import
+### 1. Import or update
 
 ```text
-Adopt skill ownership from https://github.com/orenlion1/skill-ownership in this repository.
+Adopt skill ownership from https://github.com/orenlion1/skill-ownership if this repository has no copy.
+Otherwise, check the carried copy and update it to the latest release if behind.
 ```
 
-The agent copies the latest release into skills/skill-ownership/ and records it in
+The agent imports or updates skills/skill-ownership/ to the latest release and records it in
 policy/skill-ownership-pin.json, without committing. Start from a clean working tree. See
-[Adopt](skills/skill-ownership/SKILL.md#adopt).
+[Adopt](skills/skill-ownership/SKILL.md#adopt) and [Sync](skills/skill-ownership/SKILL.md#sync).
 
 ### 2. Route
 
@@ -112,14 +113,7 @@ Run the skill ownership checks, then add them to CI.
 Every check prints one line; all should pass after the refactor. See
 [Checks](skills/skill-ownership/SKILL.md#checks).
 
-### 6. Stay current
-
-```text
-Is our skill-ownership copy up to date? If it is behind, update it to the latest release.
-```
-
-The report is read-only; the update replaces the carried copy and the pin together, without
-committing. See [Sync](skills/skill-ownership/SKILL.md#sync).
+After setup, repeat the update check periodically or when a release is announced.
 
 ## Layout
 
