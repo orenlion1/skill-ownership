@@ -2,7 +2,7 @@
 name: release-it
 description: "Release the skill-ownership repository on GitHub through its protected pull request, annotated tag, exact-SHA CI and curated release notes. Use when the user says `run release-it` or asks for a new repository release."
 metadata:
-  version: "0.1.5"
+  version: "0.1.6"
 ---
 
 # Release It
