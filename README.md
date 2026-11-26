@@ -45,7 +45,7 @@ and the skill that adopts, audits, and syncs it. It obeys its own checks.
 | --- | --- | --- |
 | A module with one responsibility | A skill owns one capability; workflow text found in a root file moves to that skill | [Design coherent units](https://agentskills.io/skill-creation/best-practices#design-coherent-units) |
 | A dispatch table | Root files hold routes and limits only, under a line budget | [Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key) |
-| A public interface | A kebab-case name matching its directory, and a one-line description that states its trigger | [Writing effective descriptions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#writing-effective-descriptions), [Naming conventions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#naming-conventions) |
+| A public interface | A bounded kebab-case name matching its directory, reserved-word checks, naming advisories, and a one-line description that states its trigger | [Writing effective descriptions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#writing-effective-descriptions), [Naming conventions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#naming-conventions) |
 | Unit tests | An eval case for every skill, run in CI | [Build evaluations first](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#build-evaluations-first) |
 | A coverage ratchet | A skill grows only through a recorded size baseline; a rewrite must keep every command, flag, path, and bound | [Token budgets](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#token-budgets) |
 | Single source of truth | Detail lives in references; a rule stated in both a skill and its references fails, and every link must resolve | [Progressive disclosure patterns](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#progressive-disclosure-patterns) |
@@ -56,6 +56,12 @@ The rest of the [checklist](https://platform.claude.com/docs/en/agents-and-tools
 such as consistent terminology and testing with every model you use, needs review by hand.
 [The principle](skills/skill-ownership/references/principle.md) defines how root-file
 sections are classified.
+
+[Naming evaluation](skills/skill-ownership/references/naming.md) separates required checks
+from vague-name advisories and agent review of specificity and collection consistency.
+Names exceeding 64 characters or containing reserved words now fail validation. Gerunds,
+noun phrases, and action names remain valid. Existing catalogs should run `check` and
+`audit` before adopting the stricter validation; renames require updating their references.
 
 ## Getting started
 

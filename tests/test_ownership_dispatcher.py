@@ -85,6 +85,21 @@ class DispatcherFixture(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn('root-contract: FAILED', out)
 
+    def test_naming_requirements_fail_checks_but_advisories_do_not(self):
+        original = self.root / 'skills/alpha'
+        for name, expected in [('a' * 65, 1), ('claude-tools', 1), ('helper', 0)]:
+            with self.subTest(name=name):
+                directory = original.with_name(name)
+                original.rename(directory)
+                (directory / 'SKILL.md').write_text(SKILL.replace('alpha', name))
+                for root_file in ('AGENTS.md', 'CLAUDE.md'):
+                    (self.root / root_file).write_text(ROOT_TEXT.replace('skills/alpha/',
+                                                                        f'skills/{name}/'))
+                code, out, err = self.run_checks()
+                self.assertEqual(code, expected, err)
+                self.assertIn('skill-validation: ' + ('FAILED' if expected else '2 skill'), out)
+                directory.rename(original)
+
     def test_malformed_optional_policy_fails_closed_instead_of_being_skipped(self):
         for name in ('delegation-contract.json', 'vendored-imports.json'):
             with self.subTest(policy=name):

@@ -66,9 +66,9 @@ file exists `audit` stops with an error, and until `policy/root-contract.json` e
 
 ## Audit
 
-`audit` is read-only. It reports each root-file section's class, unrouted skills, routes
-without a skill, oversized skills and broken links (`--format json` for tools). The classes
-are a heuristic proposal: read each section before acting on its class.
+`audit` is read-only: section classes, routing gaps, size, links and naming findings
+(`--format json` for tools). Review each section's proposed class before acting.
+Read [naming](references/naming.md) to evaluate names and advisories.
 
 ## Refactor
 
