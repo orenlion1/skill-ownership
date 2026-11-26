@@ -61,6 +61,40 @@ class SkillValidationTests(unittest.TestCase):
         self.assertEqual(count, 0)
         self.assertIn('no skills found', errors[0])
 
+    def test_name_length_boundary_and_reserved_words(self):
+        for name, expected in [('a' * 64, None), ('a' * 65, 'NAME002'),
+                               ('-alpha', 'NAME001'), ('alpha-', 'NAME001'),
+                               ('alpha--one', 'NAME001'), ('Alpha', 'NAME001'),
+                               ('alpha_one', 'NAME001'), ('<alpha>', 'NAME001'),
+                               ('claude', 'NAME003'), ('anthropic', 'NAME003'),
+                               ('claude-tools', 'NAME003'), ('tools-anthropic', 'NAME003'),
+                               ('use-claude-tools', 'NAME003'), ('claudette-tools', None),
+                               ('anthropical-analysis', None), ('processing-pdfs', None),
+                               ('pdf-processing', None), ('process-pdfs', None)]:
+            with self.subTest(name=name):
+                directory = self.root / name
+                directory.mkdir()
+                (directory / 'SKILL.md').write_text(VALID.replace('name: alpha', f'name: {name}'))
+                error = skill_validation.validate(directory)
+                if expected is None:
+                    self.assertIsNone(error, error)
+                else:
+                    self.assertIsNotNone(error)
+                    self.assertIn(expected, error)
+                    self.assertIn(str(directory / 'SKILL.md'), error)
+                    self.assertIn('https://platform.claude.com/', error)
+
+    def test_vague_names_are_advisory_only(self):
+        for name in ('helper', 'utils', 'tools', 'documents', 'data', 'files'):
+            directory = self.root / name
+            directory.mkdir()
+            (directory / 'SKILL.md').write_text(VALID.replace('name: alpha', f'name: {name}'))
+            self.assertIsNone(skill_validation.validate(directory))
+
+    def test_duplicate_name_cannot_hide_a_violation(self):
+        self.write(VALID.replace('name: alpha', 'name: claude\nname: alpha'))
+        self.assertIn('duplicate frontmatter field', self.errors()[0])
+
 
 if __name__ == '__main__':
     unittest.main()

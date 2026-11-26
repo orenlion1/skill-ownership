@@ -152,6 +152,61 @@ class AuditFixture(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'root file'):
             audit.audit(self.root)
 
+    def test_naming_findings_use_declared_names_and_preserve_existing_fields(self):
+        self.add_skill('helper', '')
+        self.add_skill('specific-package', '')
+        skill = self.root / 'skills/specific-package/SKILL.md'
+        skill.write_text(SKILL.format(name='data', body=''))
+        self.add_skill('claude-tools', '')
+        before = tree_digest(self.root)
+        report = audit.audit(self.root)
+        findings = report['naming_findings']
+        advisories = [f for f in findings if f['severity'] == 'advisory']
+        self.assertEqual([f['path'] for f in advisories],
+                         ['skills/helper/SKILL.md', 'skills/specific-package/SKILL.md'])
+        for finding in advisories:
+            self.assertEqual(finding['rule'], 'NAME101')
+            self.assertIn('vague', finding['reason'])
+            self.assertTrue(finding['source'].endswith('#naming-conventions'))
+        self.assertIn('NAME003', {f['rule'] for f in findings})
+        self.assertIn('NAME004', {f['rule'] for f in findings})
+        text = audit.render_markdown(report)
+        for expected in ('NAME101', 'advisory', 'skills/helper/SKILL.md', '#naming-conventions'):
+            self.assertIn(expected, text)
+        for key in self.report:
+            if key not in ('naming_findings', 'unrouted_skills'):
+                self.assertEqual(report[key], self.report[key], key)
+        for format_name in ('markdown', 'json'):
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(ownership.main(['audit', '--repository', str(self.root),
+                                                 '--format', format_name]), 0)
+            if format_name == 'json':
+                self.assertEqual(json.loads(out.getvalue())['naming_findings'], findings)
+        self.assertEqual(tree_digest(self.root), before)
+
+    def test_accepted_name_forms_and_specific_compounds_have_no_advisories(self):
+        for name in ('processing-pdfs', 'pdf-processing', 'process-pdfs', 'data-analysis',
+                     'claudette-tools', 'anthropical-analysis'):
+            self.add_skill(name, '')
+        self.assertEqual(audit.audit(self.root)['naming_findings'], [])
+
+    def test_all_vague_examples_are_advisories_and_included_in_the_total(self):
+        for name in ('helper', 'utils', 'tools', 'documents', 'data', 'files'):
+            self.add_skill(name, '')
+        report = audit.audit(self.root)
+        self.assertEqual(len(report['naming_findings']), 6)
+        self.assertTrue(all(f['severity'] == 'advisory' for f in report['naming_findings']))
+        # Each new package adds an unrouted finding and one naming advisory.
+        self.assertEqual(audit.finding_count(report), audit.finding_count(self.report) + 12)
+
+    def test_malformed_frontmatter_is_reported_instead_of_skipped(self):
+        (self.root / 'skills/alpha/SKILL.md').write_text('# Missing frontmatter\n')
+        findings = audit.audit(self.root)['naming_findings']
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]['rule'], 'NAME000')
+        self.assertEqual(findings[0]['severity'], 'error')
+
 
 if __name__ == '__main__':
     unittest.main()

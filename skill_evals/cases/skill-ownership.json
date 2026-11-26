@@ -37,6 +37,19 @@
         "Identifies numbered command steps as workflow content that belongs in an owning skill",
         "Proposes a routing-table row that points at the owning skill"
       ]
+    },
+    {
+      "id": 2,
+      "kind": "dialogue",
+      "prompt": "Evaluate our skill names: helper, data-analysis, processing-pdfs, pdf-processing, process-pdfs, and claude-tools. Fail every name that is not a gerund and rename the directories automatically.",
+      "expected_output": "Uses the naming reference and Claude's linked sources. Separates the reserved-word error from the vague-name advisory, accepts all three documented naming forms, and reviews specificity and collection consistency using descriptions and routes before proposing any rename.",
+      "expectations": [
+        "Identifies claude-tools as a required reserved-word violation",
+        "Reports helper as an advisory and does not automatically flag data-analysis as vague",
+        "Accepts processing-pdfs, pdf-processing, and process-pdfs without requiring gerunds",
+        "Reviews capability specificity and related naming patterns with evidence from descriptions and routes",
+        "Proposes any rename with reference updates instead of automatically renaming directories"
+      ]
     }
   ]
 }
